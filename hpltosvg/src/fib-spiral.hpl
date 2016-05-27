@@ -1,0 +1,54 @@
+def-painter beside[a](p1, p2):
+   paint p1 in subframe((0, 0), a, 1)
+   paint p2 in subframe((a, 0), 1-a, 1)
+end
+
+def-painter below[a](p1, p2):
+   paint p1 in subframe((0, 0), 1, a)
+   paint p2 in subframe((0, a), 1, 1-a)
+end
+
+def-painter rotate90[](p):
+   paint p in frame((1, 0), (0, 1), (-1, 0))
+end
+
+def-painter rotate[n](p):
+   if n == 0:
+      paint p
+   else:
+      paint rotate[n-1](rotate90[](p))
+   end
+end
+
+def-painter fibSpiral[n](p):
+   def-painter draw[dir, ratio](spiral, p):
+      if dir == 0:		# up
+         paint below[ratio](spiral, p)
+      else:
+         if dir == 1:    	# left
+            paint beside[1-ratio](p, spiral)
+	 else:
+ 	    if dir == 2:	# down
+	       paint below[1 - ratio](p, spiral)
+	    else:		# right
+	       paint beside[ratio](spiral, p)
+	    end
+	 end
+      end
+   end
+
+   def-painter loop[i, dir, prev, cur](spiral):
+      if i == n:
+         paint spiral
+      else:
+         paint loop[i+1, (dir+1)%4, cur, prev+cur]
+	           (draw[dir, prev/(prev + cur)](spiral, rotate[dir+1](p)))
+      end
+   end
+
+   paint loop[1, 0, 1, 1](p)
+end
+
+cottage = img-painter("images/cottage.jpg")
+x =  fibSpiral[4](img-painter("images/uwicrest.jpg"))
+paint x
